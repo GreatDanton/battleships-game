@@ -149,6 +149,7 @@ $('#userships .square').click(function(){
 			default:
 				break;
 		}
+		
 	}
 	console.log(userShipPositions);
 
