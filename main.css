@@ -79,8 +79,16 @@ body {
   border-color: #333;
 }
 
+.chooseShip {
+  cursor: pointer;
+}
+
 .disabledShip {
   pointer-events: none;
   text-decoration: line-through;
   color: red;
+}
+
+.notAllowed {
+  background-color: red;
 }

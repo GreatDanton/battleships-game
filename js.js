@@ -30,19 +30,6 @@ function drawBoard(id, body) {
 	}
 }
 
-// ###### GLOBAL VARIABLES ######
-var alphabet = "0abcdefghij";
-
-// current ship is not selected & rotated
-var currentShip = 0;
-var rotate = 0;
-var userShipPositions = [];
-
-// draw user board and ai board
-drawBoard('userships', '.container');
-drawBoard('AIships', '.container');
-
-
 // select current ship
 $('.submarine').click(function() {
 		currentShip = 2;
@@ -61,71 +48,105 @@ $('.aircraftCarrier').click(function() {
 });
 
 
-// on grid hover show selected ship
-$('#userships .square').hover(function() {
-// on mouse enter
-	var squareID = $(this).attr('id');
+// ###### GLOBAL VARIABLES ######
+var alphabet = "0abcdefghij";
+
+// current ship is not selected & rotated
+var currentShip = 0;
+var rotate = 0;
+var userShipPositions = [];
+
+// draw user board and ai board
+drawBoard('userships', '.container');
+drawBoard('AIships', '.container');
+
+
+// on r change rotation of the ship
+$(document).keydown(function(e) {
+	if (e.which == 82) {
+		if (rotate === 0) {
+			rotate = 90;
+		} else {
+			rotate = 0;
+		}
+		$('#userships .ship').each(function() {
+			$(this).removeClass('ship');
+		});
+		$('#userships .notAllowed').each(function() {
+			$(this).removeClass('notAllowed');
+		});
+	}
+});
+
+
+// function to return ids
+function returnIDs(squareID) {
 	var letter = alphabet.indexOf(squareID[0]);
 	squareID = squareID.substr(1, squareID.length);
 	var ids = '';
 
-// show ship on grid hover
-	if (currentShip > 1) {
-		for (i = 0; i < currentShip; i++) {
-			if (i < currentShip - 1) {
-				ids += '#userships ' + '#' + alphabet[letter + i] + squareID + ', ';
-			} else {
-				ids += '#userships ' + '#' + alphabet[letter + i] + squareID;
+if (rotate === 0) {
+  // show ship on grid hover
+  if (currentShip > 1) {
+    for (i = 0; i < currentShip; i++) {
+      if (i < currentShip - 1) {
+        ids += '#userships ' + '#' + alphabet[letter + i] + squareID + ', ';
+      } else {
+        ids += '#userships ' + '#' + alphabet[letter + i] + squareID;
+      }
+    }
+  }
+} else {
+  // write code if rotate is 90deg
+  if (currentShip > 1) {
+    for (i = 0; i < currentShip; i++) {
+      if (i < currentShip - 1) {
+        ids += '#userships ' + '#' + alphabet[letter] +
+          (parseInt(squareID) + i) + ', ';
+      } else {
+        ids += '#userships ' + '#' + alphabet[letter] +
+          (parseInt(squareID) + i);
+      }
+			if (ids.indexOf('11') > -1) {
+				ids += 'undefined';
 			}
-		}
-	}
+    }
+  }
+}
+
+return ids;
+}
+
+
+// on grid hover show selected ship
+$('#userships .square').hover(function() {
+	var squareID = $(this).attr('id');
+	ids = returnIDs(squareID);
 
 	if (ids.indexOf('undefined') == -1 ) {
 		$(ids).addClass('ship');
+	} else {
+		$(ids).addClass('notAllowed');
 	}
 
 	// on mouse leave
 }, function() {
 	var squareID = $(this).attr('id');
-	var letter = alphabet.indexOf(squareID[0]);
-	squareID = squareID.substr(1, squareID.length);
-	var ids = '';
-
-// remove colored grid on mouseleave
-	if (currentShip > 1) {
-		for (i = 0; i < currentShip; i++) {
-			if (i < currentShip - 1) {
-				ids += '#userships ' + '#' + alphabet[letter + i] + squareID + ', ';
-			} else {
-				ids += '#userships ' + '#' + alphabet[letter + i] + squareID;
-			}
-		}
-	}
+	ids = returnIDs(squareID);
 
 	$(ids).removeClass('ship');
+	$(ids).removeClass('notAllowed');
 });
 
 
 $('#userships .square').click(function(){
 	var squareID = $(this).attr('id');
-	var letter = alphabet.indexOf(squareID[0]);
-	squareID = squareID.substr(1, squareID.length);
-	var ids = '';
 
-	// which grid ids to color
-	if (currentShip > 1) {
-		for (i = 0; i < currentShip; i++) {
-			if (i < currentShip - 1) {
-				ids += '#userships ' + '#' + alphabet[letter + i] + squareID + ', ';
-			} else {
-				ids += '#userships ' + '#' + alphabet[letter + i] + squareID;
-			}
-		}
+	var ids = returnIDs(squareID);
 
-	}
 	if (ids.indexOf('undefined') == -1 && ids.length > 1) {
 		// colorize grid
-		$(ids).addClass('ship');
+		//$(ids).addClass('ship');
 		$(ids).addClass('ship-placed');
 		ids = ids.replace(/#userships /gi, '').split(', ');
 		// add ship coordinates to array
@@ -149,7 +170,7 @@ $('#userships .square').click(function(){
 			default:
 				break;
 		}
-		
+
 	}
 	console.log(userShipPositions);
 
